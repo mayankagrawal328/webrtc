@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="answer">
+    <button onclick="ans()">submit</button>
+<br>
+    <input type="text" id="messsage">
+    <button onclick="mes()">messsage</button>
+    <script>
+
+        const localConnection = new RTCPeerConnection()
+        
+
+        localConnection.onicecandidate = e =>  {
+        console.log(" NEW ice candidate!! on localconnection reprinting SDP " )
+        console.log(JSON.stringify(localConnection.localDescription))
+        }
+        
+        
+        const sendChannel = localConnection.createDataChannel("sendChannel");
+        sendChannel.onmessage =e =>  console.log("messsage received!!!"  + e.data )
+            sendChannel.onopen = e => console.log("open!!!!");
+            sendChannel.onclose =e => console.log("closed!!!!!!");
+        
+        
+        localConnection.createOffer().then(o => localConnection.setLocalDescription(o) )
+
+        function ans(){
+            answer=JSON.parse(document.getElementById('answer').value);
+            localConnection.setRemoteDescription (answer).then(a=>console.log("done"))
+        }
+        function mes(){
+            console.log(document.getElementById('messsage').value);
+            sendChannel.send(document.getElementById('messsage').value)
+        }
+    </script>
+</body>
+</html>
